@@ -1,0 +1,8 @@
+# OSX
+.DS_Store
+**/.DS_Store
+**/._.DS_Store
+
+# dependencies
+node_modules
+dist
