@@ -1,3 +1,5 @@
+import { SendBody } from "../types.js";
+import { getPackages } from "../utils.js";
 import { getProjectVersions } from "./versions.js";
 
 export const send = async () => {
@@ -25,10 +27,11 @@ export const send = async () => {
 
     const url = `${uri}/api/project/${projectId}`;
 
-    const body = {
+    const body: SendBody = {
         meta: getProjectVersions(),
         project_info: {
             environment,
+            packages: getPackages(),
         },
     };
 

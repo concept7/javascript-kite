@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Flags } from "./types.js";
+import { Flags, PackageObject } from "./types.js";
 
 export const readJsonFile = (fileName: string): any => {
     if (!fs.existsSync(fileName)) {
@@ -39,6 +39,21 @@ export const getInstalledVersion = (packageName: string, lockfile: any): string 
     }
 
     return null;
+};
+
+export const getPackages = (): Array<PackageObject> => {
+    const packageJson = readJsonFile("package.json");
+
+    const packages: Array<PackageObject> = [];
+
+    for (const [name, version] of Object.entries(packageJson.dependencies)) {
+        packages.push({
+            name,
+            version,
+        });
+    }
+
+    return packages;
 };
 
 export const hasFlag = (flag: Flags): boolean => {

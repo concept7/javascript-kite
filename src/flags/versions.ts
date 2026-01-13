@@ -13,7 +13,7 @@ export const getProjectVersions = (): VersionObject[] => {
 
     const array: VersionObject[] = [
         {
-            key: "node",
+            key: "node_version",
             value: getNodeVersion(packageFile),
         },
     ];
