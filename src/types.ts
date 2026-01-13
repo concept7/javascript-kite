@@ -7,7 +7,7 @@ export type Framework =
     | "angular_version"
     | "react_version";
 
-export type Flags = "--help" | "-h" | "--version" | "-v" | "--versions" | "--send";
+export type Flags = "--help" | "-h" | "--version" | "-v" | "--versions" | "--report";
 
 export type VersionObject = {
     key: Framework;
@@ -24,7 +24,7 @@ export type PackageObject = {
     version: string | unknown;
 };
 
-export type SendBody = {
+export type ReportBody = {
     meta: Array<VersionObject>;
     project_info: {
         environment: string;

@@ -1,8 +1,8 @@
-import { SendBody } from "../types.js";
+import { ReportBody } from "../types.js";
 import { getPackages } from "../utils.js";
 import { getProjectVersions } from "./versions.js";
 
-export const send = async () => {
+export const report = async () => {
     const environment =
         process.env.ENV ||
         process.env.ENVIRONMENT ||
@@ -27,7 +27,7 @@ export const send = async () => {
 
     const url = `${uri}/api/project/${projectId}`;
 
-    const body: SendBody = {
+    const body: ReportBody = {
         meta: getProjectVersions(),
         project_info: {
             environment,
@@ -54,6 +54,6 @@ export const send = async () => {
 
         console.info(response.message);
     } catch (error) {
-        console.info("Something went wrong sending the data :: ", error);
+        console.info("Something went wrong reporting the data :: ", error);
     }
 };

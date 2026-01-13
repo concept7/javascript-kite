@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import dotenv from "dotenv";
-import { send } from "./flags/send.js";
+import { report } from "./flags/report.js";
 import { getProjectVersions } from "./flags/versions.js";
 import { hasFlag, helpText, readJsonFile } from "./utils.js";
 
@@ -28,12 +28,12 @@ if (showVersions) {
     process.exit(0);
 }
 
-const shouldSend = hasFlag("--send");
+const shouldReport = hasFlag("--report");
 
-if (shouldSend) {
-    console.info("Sending versions to Kite Dashboard..");
+if (shouldReport) {
+    console.info("Reporting versions to Kite Dashboard..");
 
-    await send();
+    await report();
 
     process.exit(0);
 }

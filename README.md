@@ -4,7 +4,7 @@
 - [Create credentials](#create-credentials)
 - [Usage](#usage)
   - [Showing versions](#showing-versions)
-  - [Sending version information to dashboard](#sending-version-information-to-dashboard)
+  - [Report version information to dashboard](#report-version-information-to-dashboard)
 
 ## Installation
 
@@ -54,10 +54,10 @@ Below packages/frameworks can be filtered out;
 - Capacitor
 - Angular
 
-### Sending version information to dashboard
+### Report version information to dashboard
 
-To send the version information run
+To report the version information run
 
 ```
-npx kite --send
+npx kite --report
 ```
