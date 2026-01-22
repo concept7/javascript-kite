@@ -33,15 +33,30 @@ node:
 
 build-package:
     stage: build
+    image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODE_VERSION}
     script:
         - npm run build
+
+    artifacts:
+        paths:
+            - dist/*
+        expire_in: 1 days
+        when: always
+
+    needs:
+        - job: versions
+        - job: node
+        - job: prettier
+          optional: true
+    tags:
+        - javascript
 
 publish-package:
     stage: deploy
     script:
         - echo "@concept7:registry=https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
         - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
-        - npm publish
+        - npm run publish
 
     only:
         refs:
