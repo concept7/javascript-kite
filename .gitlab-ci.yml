@@ -28,8 +28,6 @@ node:
         - javascript
     needs:
         - job: versions
-    only:
-        - branches
 
 build-package:
     stage: build
@@ -46,8 +44,6 @@ build-package:
     needs:
         - job: versions
         - job: node
-        - job: prettier
-          optional: true
     tags:
         - javascript
 
@@ -62,8 +58,6 @@ publish-package:
         - job: versions
         - job: node
         - job: build-package
-        - job: prettier
-          optional: true
 
     only:
         refs:
