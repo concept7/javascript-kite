@@ -1,17 +1,27 @@
-# stages:
-#     - install
-#     - deploy
+variables:
+    NODE_VERSION: "16.14.2"
 
 stages:
     - versions
     # - dotenv
     - install
-    # - code-style
     - build
-    # - test # https://docs.gitlab.com/ee/user/application_security/sast
     - deploy
-    # - prepare
-    # - release
+
+versions:
+    image: alpine:latest
+    stage: versions
+    script:
+        - |
+            if [[ -s .nvmrc ]]; then
+              RAW_NODE_VERSION=$(cat .nvmrc)
+              NODE_VERSION=$(echo "$RAW_NODE_VERSION" | sed -E 's/^v?([^\/]+).*/\1/')
+              echo "NODE_VERSION=$NODE_VERSION" >> build.env
+              echo "✅ Found Node version: $NODE_VERSION"
+            fi
+    artifacts:
+        reports:
+            dotenv: build.env
 
 node:
     stage: install
@@ -33,14 +43,20 @@ build-package:
     stage: build
     image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODE_VERSION}
     script:
+        - |
+            if [ -n "$CI_COMMIT_TAG" ]; then
+                VERSION="${CI_COMMIT_TAG#v}"
+                echo "Tag detected → setting version to $VERSION"
+                npm version "$VERSION" --no-git-tag-version
+            else
+                echo "No tag → skipping version bump"
+            fi
         - npm run build
-
     artifacts:
         paths:
             - dist/*
         expire_in: 1 days
         when: always
-
     needs:
         - job: versions
         - job: node
@@ -50,33 +66,13 @@ build-package:
 publish-package:
     stage: deploy
     image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODE_VERSION}
+    rules:
+        - $CI_COMMIT_TAG
     script:
         - echo "@concept7:registry=https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
         - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
         - npm run publish
-
     needs:
         - job: versions
         - job: node
         - job: build-package
-
-    only:
-        refs:
-            - tags
-        variables:
-            - $CI_COMMIT_TAG != $TAG_NAME
-
-versions:
-    image: alpine:latest
-    stage: versions
-    script:
-        - |
-            if [[ -s .nvmrc ]]; then
-              RAW_NODE_VERSION=$(cat .nvmrc)
-              NODE_VERSION=$(echo "$RAW_NODE_VERSION" | sed -E 's/^v?([^\/]+).*/\1/')
-              echo "NODE_VERSION=$NODE_VERSION" >> build.env
-              echo "✅ Found Node version: $NODE_VERSION"
-            fi
-
-variables:
-    NODE_VERSION: "16.14.2"
