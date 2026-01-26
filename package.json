@@ -22,7 +22,7 @@
         "grant:permission": "chmod +x dist/index.js",
         "prettier": "prettier . --write",
         "prepare": "npm run build",
-        "publish": "npm publish --registry https://gitlab.concept7.nl/api/v4/projects/284/packages/npm/"
+        "publish-package": "npm publish --registry https://gitlab.concept7.nl/api/v4/projects/284/packages/npm/"
     },
     "bin": {
         "kite": "dist/index.js"
