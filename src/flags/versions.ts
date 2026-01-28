@@ -18,17 +18,18 @@ export const getProjectVersions = (): VersionObject[] => {
         },
     ];
 
-    //FIXME: fix adding ionic version to array
     frameworks.forEach((value) => {
         let result: string | null = null;
 
-        value.naming.forEach((name) => {
+        for (let i = 0; i < value.naming.length; i++) {
+            const name = value.naming[i];
+
             result = getInstalledVersion(name, packageLockFile);
 
             if (result) {
-                return;
+                break;
             }
-        });
+        }
 
         if (result !== null) {
             array.push({
