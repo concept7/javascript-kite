@@ -1,0 +1,38 @@
+{
+    "name": "@concept7/kite",
+    "version": "0.0.2",
+    "description": "Kite Project version monitoring tool",
+    "author": "Concept7",
+    "license": "MIT",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git@gitlab.concept7.nl:workflow/javascript-kite.git"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "clean": "rm -rf dist",
+        "rebuild": "npm run clean && npm run build",
+        "grant:permission": "chmod +x dist/index.js",
+        "prettier": "prettier . --write",
+        "prepare": "npm run build",
+        "publish-package": "npm publish --registry https://gitlab.concept7.nl/api/v4/projects/284/packages/npm/"
+    },
+    "bin": {
+        "kite": "dist/index.js"
+    },
+    "devDependencies": {
+        "@types/node": "^25.0.3",
+        "prettier": "3.7.4",
+        "typescript": "^5.2.0"
+    },
+    "dependencies": {
+        "dotenv": "^16.0.0"
+    }
+}
