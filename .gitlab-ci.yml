@@ -1,0 +1,79 @@
+variables:
+    NODE_VERSION: "16.14.2"
+
+stages:
+    - versions
+    - install
+    - build
+    - deploy
+
+versions:
+    image: alpine:latest
+    stage: versions
+    script:
+        - |
+            if [[ -s .nvmrc ]]; then
+              RAW_NODE_VERSION=$(cat .nvmrc)
+              NODE_VERSION=$(echo "$RAW_NODE_VERSION" | sed -E 's/^v?([^\/]+).*/\1/')
+              echo "NODE_VERSION=$NODE_VERSION" >> build.env
+              echo "✅ Found Node version: $NODE_VERSION"
+            fi
+    artifacts:
+        reports:
+            dotenv: build.env
+
+node:
+    stage: install
+    image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODE_VERSION}
+    script:
+        - export GITHUB_PACKAGE_REGISTRY_TOKEN=$GITHUB_PACKAGE_REGISTRY_TOKEN
+        - npm ci
+    artifacts:
+        paths:
+            - node_modules
+        expire_in: 1 days
+        when: always
+    tags:
+        - javascript
+    needs:
+        - job: versions
+
+build-package:
+    stage: build
+    image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODE_VERSION}
+    script:
+        - |
+            if [ -n "$CI_COMMIT_TAG" ]; then
+                VERSION="${CI_COMMIT_TAG#v}"
+                echo "Tag detected → setting version to $VERSION"
+                npm version "$VERSION" --no-git-tag-version
+            else
+                echo "No tag → skipping version bump"
+            fi
+        - npm run build
+
+    artifacts:
+        paths:
+            - dist/*
+            - package.json
+        expire_in: 1 days
+        when: always
+    needs:
+        - job: versions
+        - job: node
+    tags:
+        - javascript
+
+publish-package:
+    stage: deploy
+    image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODE_VERSION}
+    rules:
+        - if: $CI_COMMIT_TAG
+    script:
+        - echo "@concept7:registry=https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+        - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
+        - npm publish --registry https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/
+    needs:
+        - job: versions
+        - job: node
+        - job: build-package
