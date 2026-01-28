@@ -67,7 +67,7 @@ export const helpText = (): void => {
 
     Options:
         --versions      Print detected project versions
-        --send          Send data to the Kite dashboard
+        --report        Report data to the Kite dashboard
 
         --help, -h      Print this help text for CLI usage
         --version, -v   Print Kite version
