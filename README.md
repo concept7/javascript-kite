@@ -3,13 +3,21 @@
 - [Installation](#installation)
 - [Create credentials](#create-credentials)
 - [Usage](#usage)
-  - [Showing versions](#showing-versions)
-  - [Report version information to dashboard](#report-version-information-to-dashboard)
+    - [Showing versions](#showing-versions)
+    - [Report version information to dashboard](#report-version-information-to-dashboard)
 
 ## Installation
 
+Install the package as a dev dependency
+
 ```
-npm install --save-dev ...
+npm install --save-dev @concept7/kite
+```
+
+or
+
+```
+npm install -D @concept7/kite
 ```
 
 > _Make sure you have a `.env` with atleast a form of `ENV` or `ENVIRONMENT` in it (with or without the needed prefix)._
