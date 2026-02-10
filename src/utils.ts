@@ -13,14 +13,11 @@ export const getNodeVersion = (packageJson: any): string => {
     const nvmrcPath = path.join(process.cwd(), ".nvmrc");
 
     if (fs.existsSync(nvmrcPath)) {
-        return fs
-            .readFileSync(nvmrcPath, "utf-8")
-            .trim()
-            .replace(/[^0-9.]/g, "");
+        return fs.readFileSync(nvmrcPath, "utf-8").trim().replace(/^v/, "");
     }
 
     if (packageJson.engines) {
-        return packageJson.engines.node.replace(/[^0-9.]/g, "");
+        return packageJson.engines.node.replace(/^v/, "");
     }
 
     console.info("No Node version found");
