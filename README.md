@@ -3,6 +3,7 @@
 - [Prerequisites](#prerequisites)
     - [npmrc file](#npmrc-file)
     - [GitLab Personal Access Token](#gitlab-personal-access-token)
+    - [Project access](#project-access)
 - [Installation](#installation)
 - [Create credentials](#create-credentials)
 - [Usage](#usage)
@@ -35,6 +36,10 @@ A `.npmrc` file with the following content must exist in the root of the project
 # For installing packages from the GitLab package registry
 export CI_JOB_TOKEN={your-personal-accesstoken}
 ```
+
+#### Project access
+
+In order to make the package available in the CI/CD, add the project where this package is used in to the [Job token permissions](https://gitlab.concept7.nl/workflow/javascript-kite/-/settings/ci_cd#js-token-access)-section and give it the `Default permissions`.
 
 ## Installation
 
