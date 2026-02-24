@@ -8,6 +8,8 @@ export const report = async () => {
         process.env.ENVIRONMENT ||
         process.env.EXPO_PUBLIC_ENV ||
         process.env.EXPO_PUBLIC_ENVIRONMENT ||
+        process.env.NG_APP_ENV ||
+        process.env.NG_APP_ENVIRONMENT ||
         process.env.VITE_ENV ||
         process.env.VITE_ENVIRONMENT;
 
