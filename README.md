@@ -32,7 +32,7 @@ A `.npmrc` file with the following content must exist in the root of the project
 - Add the following code block to your `.zshrc` file and replace `{your-personal-accesstoken}` with your token (without any quotes)
 
 ```
-# GitLab Presonal Access Token
+# GitLab Personal Access Token
 # For installing packages from the GitLab package registry
 export CI_JOB_TOKEN={your-personal-accesstoken}
 ```
@@ -77,7 +77,7 @@ Create a new project in the [Kite Dashboard](https://kite-monitor.concept7.dev/)
 
 _See full explaination in the [ClickUp docs](https://app.clickup.com/24333704/v/dc/q6kc8-9535/q6kc8-2335)_
 
-**NOTE:** Do **not** prefix these variables with, depending on your project, eg. `EXPO_PUBLIC_`, `VITE_`, etc. These variables will not be used in your project so they don't have to be made available for your framework.
+**NOTE:** Do **not** prefix these variables with, depending on your project, eg. `EXPO_PUBLIC_`, `VITE_`, `NG_APP_`,etc. These variables will not be used in your project so they don't have to be made available for your framework.
 
 ## Usage
 
