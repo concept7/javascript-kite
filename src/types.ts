@@ -19,9 +19,15 @@ export type FrameworkObject = {
     naming: Array<string>;
 };
 
+export enum Ecosystem {
+    Composer = "composer",
+    Npm = "npm",
+}
+
 export type PackageObject = {
     name: string;
     version: string | unknown;
+    ecosystem: Ecosystem;
 };
 
 export type ReportBody = {
