@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Flags, PackageObject } from "./types.js";
+import { Ecosystem, Flags, PackageObject } from "./types.js";
 
 export const readJsonFile = (fileName: string): any => {
     if (!fs.existsSync(fileName)) {
@@ -47,6 +47,7 @@ export const getPackages = (): Array<PackageObject> => {
         packages.push({
             name,
             version,
+            ecosystem: Ecosystem.Npm,
         });
     }
 
