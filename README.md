@@ -71,13 +71,13 @@ And a `.nvmrc` file and/or the node version in the `package.json`, eg;
 
 ## Create credentials
 
-In order to make use of this package you need kite credentials.
+In order to make use of this package you need a kite token.
 
-Create a new project in the [Kite Dashboard](https://kite-monitor.concept7.dev/) and copy the credentials `KITE_URI`, `KITE_PROJECT_ID`, `KITE_PROJECT_KEY` to your own `.env`.
+Create a new project in the [Kite Dashboard](https://kite-monitor.concept7.dev/) and copy the `KITE_TOKEN` to your own `.env`.
 
 _See full explaination in the [ClickUp docs](https://app.clickup.com/24333704/v/dc/q6kc8-9535/q6kc8-2335)_
 
-**NOTE:** Do **not** prefix these variables with, depending on your project, eg. `EXPO_PUBLIC_`, `VITE_`, `NG_APP_`,etc. These variables will not be used in your project so they don't have to be made available for your framework.
+**NOTE:** Do **not** prefix this variable with, depending on your project, eg. `EXPO_PUBLIC_`, `VITE_`, `NG_APP_`,etc. This variable will not be used in your project so it doesn't have to be made available for your framework.
 
 ## Usage
 

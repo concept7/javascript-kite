@@ -2,6 +2,8 @@ import { ReportBody } from "../types.js";
 import { getPackages } from "../utils.js";
 import { getProjectVersions } from "./versions.js";
 
+const BASE_URL = "https://kite-monitor.concept7.dev";
+
 export const report = async () => {
     const environment =
         process.env.ENV ||
@@ -13,12 +15,10 @@ export const report = async () => {
         process.env.VITE_ENV ||
         process.env.VITE_ENVIRONMENT;
 
-    const uri = process.env.KITE_URI;
-    const projectId = process.env.KITE_PROJECT_ID;
-    const projectKey = process.env.KITE_PROJECT_KEY;
+    const token = process.env.KITE_TOKEN;
 
-    if (!uri || !projectId || !projectKey) {
-        console.info("Kite credentials are incomplete, add them to your .env");
+    if (!token) {
+        console.info("Kite credentials are incomplete, add KITE_TOKEN to your .env");
         process.exit(0);
     }
 
@@ -27,7 +27,7 @@ export const report = async () => {
         process.exit(0);
     }
 
-    const url = `${uri}/api/project/${projectId}`;
+    const url = `${process.env.KITE_URI ?? BASE_URL}/api/project`;
 
     const body: ReportBody = {
         meta: getProjectVersions(),
@@ -43,7 +43,7 @@ export const report = async () => {
             headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${projectKey}`,
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(body),
         })

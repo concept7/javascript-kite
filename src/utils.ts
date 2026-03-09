@@ -40,13 +40,14 @@ export const getInstalledVersion = (packageName: string, lockfile: any): string 
 
 export const getPackages = (): Array<PackageObject> => {
     const packageJson = readJsonFile("package.json");
+    const lockfile = readJsonFile("package-lock.json");
 
     const packages: Array<PackageObject> = [];
 
-    for (const [name, version] of Object.entries(packageJson.dependencies)) {
+    for (const name of Object.keys(packageJson.dependencies)) {
         packages.push({
             name,
-            version,
+            version: getInstalledVersion(name, lockfile),
             ecosystem: Ecosystem.Npm,
         });
     }
