@@ -28,6 +28,8 @@ export type PackageObject = {
     name: string;
     version: string | unknown;
     ecosystem: Ecosystem;
+    is_direct: boolean;
+    required_by: string[];
 };
 
 export type ReportBody = {

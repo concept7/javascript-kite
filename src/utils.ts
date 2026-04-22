@@ -24,35 +24,67 @@ export const getNodeVersion = (packageJson: any): string => {
     process.exit(0);
 };
 
-export const getInstalledVersion = (packageName: string, lockfile: any): string | null => {
-    if (!lockfile?.packages) {
-        return null;
-    }
+const nameFromPath = (pkgPath: string): string | null => {
+    const parts = pkgPath.split("node_modules/");
+    const name = parts[parts.length - 1];
+    return name || null;
+};
 
-    for (const [pkgPath, info] of Object.entries(lockfile.packages)) {
-        if (pkgPath.endsWith(`node_modules/${packageName}`)) {
-            return (info as any).version ?? null;
+const buildRequiredByMap = (lockfilePackages: Record<string, any>): Record<string, string[]> => {
+    const requiredBy: Record<string, string[]> = {};
+
+    for (const [pkgPath, info] of Object.entries(lockfilePackages)) {
+        if (pkgPath === "") continue;
+
+        const name = nameFromPath(pkgPath);
+        if (!name) continue;
+
+        for (const dep of Object.keys((info as any).dependencies ?? {})) {
+            if (!requiredBy[dep]) requiredBy[dep] = [];
+            requiredBy[dep].push(name);
         }
     }
 
-    return null;
+    return requiredBy;
 };
 
 export const getPackages = (): Array<PackageObject> => {
     const packageJson = readJsonFile("package.json");
     const lockfile = readJsonFile("package-lock.json");
 
-    const packages: Array<PackageObject> = [];
-
-    for (const name of Object.keys(packageJson.dependencies)) {
-        packages.push({
-            name,
-            version: getInstalledVersion(name, lockfile),
-            ecosystem: Ecosystem.Npm,
-        });
+    if (!lockfile?.packages) {
+        return [];
     }
 
-    return packages;
+    const directNames = new Set([
+        ...Object.keys(packageJson?.dependencies ?? {}),
+        ...Object.keys(packageJson?.devDependencies ?? {}),
+    ]);
+
+    const requiredByMap = buildRequiredByMap(lockfile.packages);
+    const packages: Record<string, PackageObject> = {};
+
+    for (const [pkgPath, info] of Object.entries(lockfile.packages)) {
+        if (pkgPath === "") continue;
+
+        const name = nameFromPath(pkgPath);
+        const version = (info as any).version;
+
+        if (!name || !version) continue;
+
+        const key = `${name}:${version}`;
+        if (!packages[key]) {
+            packages[key] = {
+                name,
+                version,
+                ecosystem: Ecosystem.Npm,
+                is_direct: directNames.has(name),
+                required_by: requiredByMap[name] ?? [],
+            };
+        }
+    }
+
+    return Object.values(packages);
 };
 
 export const hasFlag = (flag: Flags): boolean => {
