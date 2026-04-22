@@ -34,13 +34,19 @@ const buildRequiredByMap = (lockfilePackages: Record<string, any>): Record<strin
     const requiredBy: Record<string, string[]> = {};
 
     for (const [pkgPath, info] of Object.entries(lockfilePackages)) {
-        if (pkgPath === "") continue;
+        if (pkgPath === "") {
+            continue;
+        }
 
         const name = nameFromPath(pkgPath);
-        if (!name) continue;
+        if (!name) {
+            continue;
+        }
 
         for (const dep of Object.keys((info as any).dependencies ?? {})) {
-            if (!requiredBy[dep]) requiredBy[dep] = [];
+            if (!requiredBy[dep]) {
+                requiredBy[dep] = [];
+            }
             requiredBy[dep].push(name);
         }
     }
@@ -65,12 +71,16 @@ export const getPackages = (): Array<PackageObject> => {
     const packages: Record<string, PackageObject> = {};
 
     for (const [pkgPath, info] of Object.entries(lockfile.packages)) {
-        if (pkgPath === "") continue;
+        if (pkgPath === "") {
+            continue;
+        }
 
         const name = nameFromPath(pkgPath);
         const version = (info as any).version;
 
-        if (!name || !version) continue;
+        if (!name || !version) {
+            continue;
+        }
 
         const key = `${name}:${version}`;
         if (!packages[key]) {
