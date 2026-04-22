@@ -24,6 +24,20 @@ export const getNodeVersion = (packageJson: any): string => {
     process.exit(0);
 };
 
+export const getInstalledVersion = (packageName: string, lockfile: any): string | null => {
+    if (!lockfile?.packages) {
+        return null;
+    }
+
+    for (const [pkgPath, info] of Object.entries(lockfile.packages)) {
+        if (pkgPath.endsWith(`node_modules/${packageName}`)) {
+            return (info as any).version ?? null;
+        }
+    }
+
+    return null;
+};
+
 const nameFromPath = (pkgPath: string): string | null => {
     const parts = pkgPath.split("node_modules/");
     const name = parts[parts.length - 1];
