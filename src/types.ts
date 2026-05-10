@@ -32,10 +32,16 @@ export type PackageObject = {
     required_by: string[];
 };
 
+export type KiteConfig = {
+    packages: string[] | null;
+    monitored_packages: string[];
+};
+
 export type ReportBody = {
     meta: Array<VersionObject>;
     project_info: {
         environment: string;
         packages: Array<PackageObject>;
+        monitored_packages?: string[];
     };
 };

@@ -1,5 +1,5 @@
 import { ReportBody } from "../types.js";
-import { getPackages } from "../utils.js";
+import { getKiteConfig, getPackages } from "../utils.js";
 import { getProjectVersions } from "./versions.js";
 
 const BASE_URL = "https://kite-monitor.concept7.dev";
@@ -28,13 +28,26 @@ export const report = async () => {
     }
 
     const url = `${process.env.KITE_URI ?? BASE_URL}/api/project`;
+    const config = getKiteConfig();
+
+    let packages = getPackages();
+
+    if (config.packages !== null) {
+        packages = packages.filter((pkg) => config.packages!.includes(pkg.name));
+    }
+
+    const projectInfo: ReportBody["project_info"] = {
+        environment,
+        packages,
+    };
+
+    if (config.monitored_packages.length > 0) {
+        projectInfo.monitored_packages = config.monitored_packages;
+    }
 
     const body: ReportBody = {
         meta: getProjectVersions(),
-        project_info: {
-            environment,
-            packages: getPackages(),
-        },
+        project_info: projectInfo,
     };
 
     try {
