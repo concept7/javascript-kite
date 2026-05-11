@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Ecosystem, Flags, KiteConfig, PackageObject } from "./types.js";
+import { Ecosystem, Flags, PackageObject } from "./types.js";
 
 export const readJsonFile = (fileName: string): any => {
     if (!fs.existsSync(fileName)) {
@@ -109,15 +109,6 @@ export const getPackages = (): Array<PackageObject> => {
     }
 
     return Object.values(packages);
-};
-
-export const getKiteConfig = (): KiteConfig => {
-    const config = readJsonFile(".kite.json");
-
-    return {
-        packages: config?.packages ?? null,
-        monitored_packages: config?.monitored_packages ?? [],
-    };
 };
 
 export const hasFlag = (flag: Flags): boolean => {
