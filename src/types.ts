@@ -1,22 +1,8 @@
-export type Framework =
-    | "node_version"
-    | "expo_version"
-    | "react-native_version"
-    | "ionic_version"
-    | "capacitor_version"
-    | "angular_version"
-    | "react_version";
-
 export type Flags = "--help" | "-h" | "--version" | "-v" | "--versions" | "--report";
 
 export type VersionObject = {
-    key: Framework;
+    key: "node_version";
     value: string;
-};
-
-export type FrameworkObject = {
-    key: Framework;
-    naming: Array<string>;
 };
 
 export enum Ecosystem {
@@ -30,6 +16,13 @@ export type PackageObject = {
     ecosystem: Ecosystem;
     is_direct: boolean;
     required_by: string[];
+};
+
+export type ConfigResponse = {
+    config: {
+        monitored_packages: string[];
+        is_sharing_all_packages: boolean;
+    };
 };
 
 export type ReportBody = {
