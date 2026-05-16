@@ -1,8 +1,6 @@
-import { ReportBody } from "../types.js";
+import { ConfigResponse, PackageObject, ReportBody } from "../types.js";
 import { getPackages } from "../utils.js";
 import { getProjectVersions } from "./versions.js";
-
-const BASE_URL = "https://kite-monitor.concept7.dev";
 
 export const report = async () => {
     const environment =
@@ -27,35 +25,59 @@ export const report = async () => {
         process.exit(0);
     }
 
-    const url = `${process.env.KITE_URI ?? BASE_URL}/api/project`;
+    const baseUrl = process.env.KITE_URI ?? "https://kite-monitor.concept7.dev";
+    const headers = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+    };
+
+    const config = await fetchConfig(baseUrl, headers);
+    const packages = filterPackages(getPackages(), config);
 
     const body: ReportBody = {
         meta: getProjectVersions(),
         project_info: {
             environment,
-            packages: getPackages(),
+            packages,
         },
     };
 
     try {
-        const response = await fetch(url, {
+        const response = await fetch(`${baseUrl}/api/project`, {
             method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
+            headers,
             body: JSON.stringify(body),
         })
-            .then((response) => {
-                return response.json();
-            })
-            .catch((error) => {
-                return error;
-            });
+            .then((response) => response.json())
+            .catch((error) => error);
 
         console.info(response.message);
     } catch (error) {
         console.info("Something went wrong reporting the data :: ", error);
     }
+};
+
+const fetchConfig = async (baseUrl: string, headers: Record<string, string>): Promise<ConfigResponse["config"]> => {
+    try {
+        const response = await fetch(`${baseUrl}/api/config`, { headers });
+
+        if (!response.ok) {
+            return { monitored_packages: [], is_sharing_all_packages: true };
+        }
+
+        const data: ConfigResponse = await response.json();
+
+        return data.config ?? { monitored_packages: [], is_sharing_all_packages: true };
+    } catch {
+        return { monitored_packages: [], is_sharing_all_packages: true };
+    }
+};
+
+const filterPackages = (packages: PackageObject[], config: ConfigResponse["config"]): PackageObject[] => {
+    if (config.is_sharing_all_packages) {
+        return packages;
+    }
+
+    return packages.filter((packageObject) => config.monitored_packages.includes(packageObject.name));
 };

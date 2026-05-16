@@ -1,6 +1,3 @@
-variables:
-    NODE_VERSION: "16.14.2"
-
 stages:
     - versions
     - install
