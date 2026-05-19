@@ -25,7 +25,7 @@ export const report = async () => {
         process.exit(0);
     }
 
-    const baseUrl = process.env.KITE_URI ?? "https://kite-monitor.concept7.dev";
+    const baseUrl = process.env.KITE_URI ?? "https://kite-monitor.com";
     const headers = {
         Accept: "application/json",
         "Content-Type": "application/json",
