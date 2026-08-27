@@ -1,15 +1,28 @@
 {
     "name": "@concept7/kite",
-    "version": "0.0.2",
+    "version": "1.1.2",
     "description": "Kite Project version monitoring tool",
     "author": "Concept7",
     "license": "MIT",
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "homepage": "https://github.com/concept7/javascript-kite",
     "repository": {
         "type": "git",
-        "url": "git@gitlab.concept7.nl:workflow/javascript-kite.git"
+        "url": "git+https://github.com/concept7/javascript-kite.git"
+    },
+    "bugs": {
+        "url": "https://github.com/concept7/javascript-kite/issues"
+    },
+    "keywords": [
+        "kite",
+        "monitoring",
+        "dependencies",
+        "cli"
+    ],
+    "publishConfig": {
+        "access": "public"
     },
     "files": [
         "dist"
@@ -21,8 +34,8 @@
         "rebuild": "npm run clean && npm run build",
         "grant:permission": "chmod +x dist/index.js",
         "prettier": "prettier . --write",
-        "prepare": "npm run build",
-        "publish-package": "npm publish --registry https://gitlab.concept7.nl/api/v4/projects/284/packages/npm/"
+        "prettier:check": "prettier . --check",
+        "prepare": "npm run build"
     },
     "bin": {
         "kite": "dist/index.js"
