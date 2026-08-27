@@ -1,30 +1,30 @@
 name: tests
 
 on:
-  push:
-    branches: [1.x, develop]
-    tags: ['v*']
-  pull_request:
+    push:
+        branches: [1.x, develop]
+        tags: ["v*"]
+    pull_request:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: Build and format check
+    build:
+        runs-on: ubuntu-latest
+        name: Build and format check
 
-    steps:
-      - uses: actions/checkout@v5
+        steps:
+            - uses: actions/checkout@v5
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version-file: .nvmrc
-          cache: npm
+            - name: Setup Node
+              uses: actions/setup-node@v5
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm ci --ignore-scripts
+            - name: Install dependencies
+              run: npm ci --ignore-scripts
 
-      - name: Check formatting
-        run: npm run prettier:check
+            - name: Check formatting
+              run: npm run prettier:check
 
-      - name: Build
-        run: npm run build
+            - name: Build
+              run: npm run build

@@ -62,10 +62,7 @@ export const getPackages = (): Array<PackageObject> => {
         return [];
     }
 
-    const directNames = new Set([
-        ...Object.keys(packageJson?.dependencies ?? {}),
-        ...Object.keys(packageJson?.devDependencies ?? {}),
-    ]);
+    const directNames = new Set([...Object.keys(packageJson?.dependencies ?? {}), ...Object.keys(packageJson?.devDependencies ?? {})]);
 
     const requiredByMap = buildRequiredByMap(lockfile.packages);
     const packages: Record<string, PackageObject> = {};
