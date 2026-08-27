@@ -47,7 +47,7 @@ npm install --save-dev @concept7/kite
 
 ## Configuration
 
-Add the `KITE_TOKEN` to your `.env` file (generated from the [Kite Dashboard](https://kite-monitor.concept7.dev/)):
+Add the `KITE_TOKEN` to your `.env` file (generated from the [Kite Dashboard](https://kite-monitor.com/)):
 
 ```env
 KITE_TOKEN=your-kite-token
