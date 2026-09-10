@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+
 import { Ecosystem, Flags, PackageObject } from "./types.js";
 
 export const readJsonFile = (fileName: string): any => {
@@ -7,6 +9,12 @@ export const readJsonFile = (fileName: string): any => {
         return null;
     }
     return JSON.parse(fs.readFileSync(fileName, "utf-8"));
+};
+
+export const getKiteVersion = (): string => {
+    const packageJsonPath = fileURLToPath(new URL("../package.json", import.meta.url));
+
+    return readJsonFile(packageJsonPath)?.version ?? "unknown";
 };
 
 export const getNodeVersion = (packageJson: any): string => {
