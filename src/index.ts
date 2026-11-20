@@ -3,7 +3,7 @@
 import dotenv from "dotenv";
 import { report } from "./flags/report.js";
 import { getProjectVersions } from "./flags/versions.js";
-import { hasFlag, helpText, readJsonFile } from "./utils.js";
+import { getKiteVersion, hasFlag, helpText } from "./utils.js";
 
 //* Read .env file from project
 dotenv.config({
@@ -41,9 +41,7 @@ if (shouldReport) {
 const showVersion = hasFlag("--version") || hasFlag("-v");
 
 if (showVersion) {
-    const packageJson = readJsonFile("package.json");
-
-    console.info(packageJson.version);
+    console.info(getKiteVersion());
     process.exit(0);
 }
 

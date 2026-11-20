@@ -10,12 +10,20 @@ export enum Ecosystem {
     Npm = "npm",
 }
 
+export type DependentObject = {
+    name: string;
+    version: string;
+    constraint: string;
+};
+
 export type PackageObject = {
     name: string;
     version: string | unknown;
     ecosystem: Ecosystem;
     is_direct: boolean;
     required_by: string[];
+    constraint: string | null;
+    dependents: DependentObject[];
 };
 
 export type ConfigResponse = {

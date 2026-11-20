@@ -1,12 +1,20 @@
 import fs from "fs";
 import path from "path";
-import { Ecosystem, Flags, PackageObject } from "./types.js";
+import { fileURLToPath } from "url";
+
+import { DependentObject, Ecosystem, Flags, PackageObject } from "./types.js";
 
 export const readJsonFile = (fileName: string): any => {
     if (!fs.existsSync(fileName)) {
         return null;
     }
     return JSON.parse(fs.readFileSync(fileName, "utf-8"));
+};
+
+export const getKiteVersion = (): string => {
+    const packageJsonPath = fileURLToPath(new URL("../package.json", import.meta.url));
+
+    return readJsonFile(packageJsonPath)?.version ?? "unknown";
 };
 
 export const getNodeVersion = (packageJson: any): string => {
@@ -54,6 +62,87 @@ const buildRequiredByMap = (lockfilePackages: Record<string, any>): Record<strin
     return requiredBy;
 };
 
+/**
+ * Resolves a dependency the way Node does: the nearest node_modules folder
+ * from the requiring package up to the project root.
+ */
+const resolveDependencyPath = (lockfilePackages: Record<string, any>, parentPath: string, dependency: string): string | null => {
+    let basePath = parentPath;
+
+    while (true) {
+        const candidate = basePath === "" ? `node_modules/${dependency}` : `${basePath}/node_modules/${dependency}`;
+
+        if (lockfilePackages[candidate]) {
+            return candidate;
+        }
+
+        if (basePath === "") {
+            return null;
+        }
+
+        const lastNodeModules = basePath.lastIndexOf("node_modules/");
+        basePath = lastNodeModules > 0 ? basePath.slice(0, lastNodeModules - 1) : "";
+    }
+};
+
+/**
+ * Per installed copy (name:version): the constraint the project manifest puts
+ * on it when it is a direct dependency, and every parent copy that requires it
+ * with the constraint that parent puts on it.
+ */
+const buildConstraints = (
+    lockfilePackages: Record<string, any>,
+): { manifestConstraints: Record<string, string>; dependents: Record<string, DependentObject[]> } => {
+    const manifestConstraints: Record<string, string> = {};
+    const dependents: Record<string, DependentObject[]> = {};
+
+    for (const [pkgPath, info] of Object.entries(lockfilePackages)) {
+        const parentName = pkgPath === "" ? null : nameFromPath(pkgPath);
+        const parentVersion = (info as any).version;
+
+        if (pkgPath !== "" && (!parentName || !parentVersion)) {
+            continue;
+        }
+
+        const dependencySpecs: Record<string, string> = {
+            ...((info as any).peerDependencies ?? {}),
+            ...((info as any).optionalDependencies ?? {}),
+            ...((info as any).devDependencies ?? {}),
+            ...((info as any).dependencies ?? {}),
+        };
+
+        for (const [dependency, constraint] of Object.entries(dependencySpecs)) {
+            const dependencyPath = resolveDependencyPath(lockfilePackages, pkgPath, dependency);
+            const dependencyVersion = dependencyPath ? lockfilePackages[dependencyPath].version : null;
+
+            if (!dependencyVersion) {
+                continue;
+            }
+
+            const key = `${dependency}:${dependencyVersion}`;
+
+            if (pkgPath === "") {
+                manifestConstraints[key] = constraint;
+                continue;
+            }
+
+            if (!dependents[key]) {
+                dependents[key] = [];
+            }
+
+            const isKnownDependent = dependents[key].some(
+                (dependent) => dependent.name === parentName && dependent.version === parentVersion && dependent.constraint === constraint,
+            );
+
+            if (!isKnownDependent) {
+                dependents[key].push({ name: parentName as string, version: parentVersion, constraint });
+            }
+        }
+    }
+
+    return { manifestConstraints, dependents };
+};
+
 export const getPackages = (): Array<PackageObject> => {
     const packageJson = readJsonFile("package.json");
     const lockfile = readJsonFile("package-lock.json");
@@ -65,6 +154,7 @@ export const getPackages = (): Array<PackageObject> => {
     const directNames = new Set([...Object.keys(packageJson?.dependencies ?? {}), ...Object.keys(packageJson?.devDependencies ?? {})]);
 
     const requiredByMap = buildRequiredByMap(lockfile.packages);
+    const { manifestConstraints, dependents } = buildConstraints(lockfile.packages);
     const packages: Record<string, PackageObject> = {};
 
     for (const [pkgPath, info] of Object.entries(lockfile.packages)) {
@@ -87,6 +177,8 @@ export const getPackages = (): Array<PackageObject> => {
                 ecosystem: Ecosystem.Npm,
                 is_direct: directNames.has(name),
                 required_by: requiredByMap[name] ?? [],
+                constraint: manifestConstraints[key] ?? null,
+                dependents: dependents[key] ?? [],
             };
         }
     }
